@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "dymo-print-ui"
+version = "0.1.0"
+description = "Web interface for printing labels on the Dymo LetraTag label printers"
+authors = ["Peter Oostewechel <peter_oostewechel@hotmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "dymo_print_ui", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+loguru = "^0.7.3"
+fastapi = "^0.115.0"
+uvicorn = { extras = ["standard"], version = "^0.32.0" }
+pillow = "~11.0.0"
+bleak = "~1.1.1"
+httpx = "^0.27.0"
+platformdirs = "^4.3.0"
+python-multipart = "^0.0.12"
+# The dymo_bluetooth driver lives in the external/dymo-bluetooth git submodule.
+# Its packaging uses PEP 621 [project] which Poetry 1.7 can't consume as a path
+# dependency, so we vendor it via sys.path (see dymo_print_ui/__init__.py) and
+# declare its runtime deps (bleak, pillow) directly above.
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.0"
+
+[tool.poetry.scripts]
+dymo-print-ui = "dymo_print_ui.__main__:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

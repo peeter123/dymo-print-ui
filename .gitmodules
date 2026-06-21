@@ -1,0 +1,3 @@
+[submodule "external/dymo-bluetooth"]
+	path = external/dymo-bluetooth
+	url = https://github.com/ysfchn/dymo-bluetooth

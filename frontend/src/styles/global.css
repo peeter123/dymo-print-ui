@@ -1,0 +1,198 @@
+/* ───────────────────────────────────────────────────────────────────────────
+   Label Studio — editorial / paper design system
+
+   Warm off-white paper, ink-near-black text, a single muted vermilion accent.
+   Real typographic hierarchy, hairline rules, restrained shadows. No gradients,
+   no card-grid dashboard. The tape strip is the centrepiece.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Paper & ink */
+  --paper: #f4f1ea;
+  --paper-raised: #fbf9f4;
+  --ink: #1c1a17;
+  --ink-soft: #5c574e;
+  --ink-faint: #908a7d;
+
+  /* A single restrained accent — muted vermilion, used sparingly. */
+  --accent: #c0492f;
+  --accent-soft: #d98c79;
+  --accent-wash: #f0e2dc;
+
+  /* Lines & surfaces */
+  --rule: #ddd6c8;
+  --rule-strong: #c7bfae;
+  --shadow: 0 1px 2px rgba(28, 26, 23, 0.06), 0 8px 24px rgba(28, 26, 23, 0.05);
+  --shadow-soft: 0 1px 1px rgba(28, 26, 23, 0.05);
+
+  /* Type */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Roboto Mono", ui-monospace, "SF Mono", "Cascadia Mono", monospace;
+
+  --radius: 6px;
+  --radius-lg: 12px;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background-color: var(--paper);
+  /* A faint paper grain via two offset radial dots; subtle, not noisy. */
+  background-image: radial-gradient(rgba(28, 26, 23, 0.015) 1px, transparent 1px);
+  background-size: 4px 4px;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#app {
+  height: 100%;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--ink);
+}
+
+/* The small-caps section labels that set the editorial tone. */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-weight: 500;
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform 0.06s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.btn:hover {
+  border-color: var(--ink-soft);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fdf6f3;
+}
+
+.btn-primary:hover {
+  border-color: var(--accent);
+  background: #ad3f28;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.btn-ghost:hover {
+  background: rgba(28, 26, 23, 0.05);
+  border-color: transparent;
+}
+
+.btn-icon {
+  padding: 8px;
+}
+
+/* ── Form controls ────────────────────────────────────────────────────────── */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field > label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+/* Label spans for fields whose control isn't a native form element. */
+.field > .lbl {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-soft) inset;
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--accent-soft);
+  box-shadow: 0 0 0 3px var(--accent-wash);
+}
+
+/* Thin scrollbars that match the paper. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule-strong) transparent;
+}
