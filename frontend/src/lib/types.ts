@@ -52,6 +52,13 @@ export interface LineElement extends BaseElement {
 
 export type LabelElement = TextElement | IconElement | RectElement | LineElement;
 
+/** The label document: an ordered list of elements plus margins. */
+export interface LabelDoc {
+  elements: LabelElement[];
+  marginLeft: number;
+  marginRight: number;
+}
+
 export interface Box {
   x: number;
   y: number;
@@ -70,4 +77,15 @@ export interface AppConfig {
   default_stretch: number;
   default_dither: boolean;
   fonts: string[];
+}
+
+export interface HistoryEntrySummary {
+  id: string;
+  timestamp: string;
+  width: number;
+  height: number;
+}
+
+export interface HistoryEntryDetail extends HistoryEntrySummary {
+  document: LabelDoc;
 }

@@ -1,4 +1,4 @@
-import type { AppConfig, PrinterInfo } from "./types";
+import type { AppConfig, PrinterInfo, LabelDoc, HistoryEntrySummary, HistoryEntryDetail } from "./types";
 
 async function jsonGet<T>(url: string): Promise<T> {
   const res = await fetch(url);
@@ -86,6 +86,7 @@ export const api = {
   /** POST a rendered PNG to print. Returns the printer outcome. */
   async print(
     png: Blob,
+    doc: LabelDoc,
     opts: { copies: number; stretch: number; dither: boolean; padding: number },
   ): Promise<{
     result: string;
@@ -100,10 +101,59 @@ export const api = {
     form.append("stretch", String(opts.stretch));
     form.append("dither", String(opts.dither));
     form.append("padding", String(opts.padding));
+    form.append("document", JSON.stringify(doc));
     const res = await fetch("/api/print", { method: "POST", body: form });
     if (!res.ok) {
       const detail = await res.json().catch(() => ({ detail: res.statusText }));
       throw new Error(detail.detail ?? "Print failed");
+    }
+    return res.json();
+  },
+
+  async getHistory(): Promise<HistoryEntrySummary[]> {
+    const data = await jsonGet<{ entries: HistoryEntrySummary[] }>("/api/history");
+    return data.entries;
+  },
+
+  async getHistoryEntry(id: string): Promise<HistoryEntryDetail> {
+    return jsonGet(`/api/history/${id}`);
+  },
+
+  async deleteHistoryEntry(id: string): Promise<void> {
+    const res = await fetch(`/api/history/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error(await res.text());
+  },
+
+  async reprintHistoryEntry(
+    id: string,
+    copies: number,
+  ): Promise<{ result: string; code: number; low_battery: boolean; width: number; height: number }> {
+    const form = new FormData();
+    form.append("copies", String(copies));
+    const res = await fetch(`/api/history/${id}/reprint`, { method: "POST", body: form });
+    if (!res.ok) {
+      const detail = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(detail.detail ?? "Reprint failed");
+    }
+    return res.json();
+  },
+
+  /** Save the current editor state to history without printing it. */
+  async saveHistoryDraft(
+    png: Blob,
+    doc: LabelDoc,
+    opts: { stretch: number; dither: boolean; padding: number },
+  ): Promise<HistoryEntrySummary> {
+    const form = new FormData();
+    form.append("image", png, "label.png");
+    form.append("document", JSON.stringify(doc));
+    form.append("stretch", String(opts.stretch));
+    form.append("dither", String(opts.dither));
+    form.append("padding", String(opts.padding));
+    const res = await fetch("/api/history", { method: "POST", body: form });
+    if (!res.ok) {
+      const detail = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(detail.detail ?? "Could not save to history");
     }
     return res.json();
   },

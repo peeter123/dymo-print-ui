@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from io import BytesIO
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
@@ -10,6 +11,7 @@ from loguru import logger
 
 from dymo_print_ui import printer_service
 from dymo_print_ui.config import config
+from dymo_print_ui.history_store import history
 from dymo_print_ui.printer_service import NoPrinterError
 
 router = APIRouter(prefix="/api", tags=["printing"])
@@ -22,6 +24,7 @@ async def print_label(
     stretch: int = Form(2),
     dither: bool = Form(False),
     padding: int = Form(0),
+    document: str | None = Form(None),
 ) -> dict:
     """Receive a browser-rendered PNG and print it on the LetraTag."""
     png_bytes = await image.read()
@@ -39,6 +42,21 @@ async def print_label(
     except Exception as exc:  # BLE / GATT failures surface as 502.
         logger.exception("Print failed")
         raise HTTPException(status_code=502, detail=f"Print failed: {exc}") from exc
+
+    if outcome.result.startswith("SUCCESS") and document is not None:
+        try:
+            history.add(
+                png_bytes=png_bytes,
+                document=json.loads(document),
+                width=outcome.width,
+                height=outcome.height,
+                stretch=stretch,
+                dither=dither,
+                padding=padding,
+            )
+        except Exception:
+            logger.exception("Failed to record print history (print itself succeeded)")
+
     return {
         "result": outcome.result,
         "code": outcome.code,

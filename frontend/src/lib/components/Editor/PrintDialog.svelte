@@ -28,7 +28,7 @@
     result = null;
     try {
       const png = await renderToPng($doc);
-      const res = await api.print(png, {
+      const res = await api.print(png, $doc, {
         copies,
         stretch,
         dither: $config.default_dither ?? false,

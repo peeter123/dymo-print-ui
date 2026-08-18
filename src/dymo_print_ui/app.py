@@ -15,7 +15,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from dymo_print_ui.logging import setup_logging
-from dymo_print_ui.routers import assets, config, printers, printing
+from dymo_print_ui.routers import assets, config, history, printers, printing
 
 _FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
 
@@ -36,6 +36,7 @@ def create_app() -> FastAPI:
     app.include_router(printing.router)
     app.include_router(config.router)
     app.include_router(assets.router)
+    app.include_router(history.router)
 
     @app.get("/api/health")
     async def health() -> dict:

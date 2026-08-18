@@ -1,13 +1,15 @@
 import { writable, derived, get } from "svelte/store";
-import type { LabelElement, TextElement, IconElement, RectElement, LineElement } from "../types";
+import type {
+  LabelElement,
+  TextElement,
+  IconElement,
+  RectElement,
+  LineElement,
+  LabelDoc,
+} from "../types";
 import { TAPE_HEIGHT } from "../types";
 
-/** The label document: an ordered list of elements plus margins. */
-export interface LabelDoc {
-  elements: LabelElement[];
-  marginLeft: number;
-  marginRight: number;
-}
+export type { LabelDoc };
 
 const EMPTY: LabelDoc = { elements: [], marginLeft: 8, marginRight: 8 };
 
@@ -162,6 +164,15 @@ export function clearAll(): void {
 export function setMargins(left: number, right: number): void {
   snapshot();
   doc.update((d) => ({ ...d, marginLeft: left, marginRight: right }));
+}
+
+/** Replace the whole document (e.g. restoring a history entry). Undoable,
+ * like every other mutation here — Ctrl+Z after a restore returns to
+ * whatever was in the editor before it. */
+export function loadDocument(newDoc: LabelDoc): void {
+  snapshot();
+  doc.set(structuredClone(newDoc));
+  selectedId.set(null);
 }
 
 export const selectedElement = derived([doc, selectedId], ([$doc, $id]) =>

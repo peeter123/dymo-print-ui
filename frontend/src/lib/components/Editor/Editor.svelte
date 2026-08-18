@@ -13,6 +13,8 @@
   } from "../../stores/label";
   import { config } from "../../stores/config";
   import { tapeWidth, tapeLengthMm } from "../../render/measure";
+  import { renderToPng } from "../../render/exportCanvas";
+  import { api } from "../../api";
   import EditorCanvas from "./EditorCanvas.svelte";
   import ElementInspector from "../Inspector/ElementInspector.svelte";
   import IconPicker from "../Inspector/IconPicker.svelte";
@@ -29,6 +31,8 @@
   let showPrint = $state(false);
   let showGrid = $state(true);
   let stageWidth = $state(0);
+  let savingDraft = $state(false);
+  let draftSaved = $state(false);
 
   const width = $derived(tapeWidth($doc.elements, $doc.marginLeft, $doc.marginRight));
   const stretch = $derived($config.default_stretch ?? 2);
@@ -56,6 +60,24 @@
       redo();
     }
   }
+
+  async function saveDraft(): Promise<void> {
+    savingDraft = true;
+    draftSaved = false;
+    try {
+      const png = await renderToPng($doc);
+      await api.saveHistoryDraft(png, $doc, {
+        stretch: $config.default_stretch ?? 2,
+        dither: $config.default_dither ?? false,
+        padding: 0,
+      });
+      draftSaved = true;
+      setTimeout(() => (draftSaved = false), 2000);
+    } catch (e) {
+      console.error("Failed to save to history", e);
+    }
+    savingDraft = false;
+  }
 </script>
 
 <svelte:window onkeydown={onKeydown} />
@@ -75,6 +97,10 @@
     </div>
 
     <div class="right">
+      {#if draftSaved}<span class="draft-saved">Saved to history</span>{/if}
+      <button class="btn btn-ghost" disabled={savingDraft} onclick={saveDraft}>
+        {savingDraft ? "Saving…" : "Save to History"}
+      </button>
       <button class="btn btn-primary" onclick={() => (showPrint = true)}>Print…</button>
     </div>
   </div>
@@ -162,6 +188,14 @@
 
   .right {
     margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .draft-saved {
+    font-size: 12px;
+    color: #2f6440;
   }
 
   .workspace {

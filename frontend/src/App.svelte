@@ -5,8 +5,9 @@
   import { injectFonts, injectUiFont } from "./lib/render/fonts";
   import Editor from "./lib/components/Editor/Editor.svelte";
   import PrinterPage from "./lib/components/Settings/PrinterPage.svelte";
+  import HistoryPage from "./lib/components/History/HistoryPage.svelte";
 
-  type View = "editor" | "settings";
+  type View = "editor" | "settings" | "history";
   let view = $state<View>("editor");
   let ready = $state(false);
 
@@ -46,6 +47,11 @@
       >
       <button
         class="nav-link"
+        class:active={view === "history"}
+        onclick={() => (view = "history")}>History</button
+      >
+      <button
+        class="nav-link"
         class:active={view === "settings"}
         onclick={() => (view = "settings")}
       >
@@ -67,8 +73,10 @@
       <div class="loading">Loading…</div>
     {:else if view === "editor"}
       <Editor onGoToSettings={() => (view = "settings")} />
-    {:else}
+    {:else if view === "settings"}
       <PrinterPage />
+    {:else}
+      <HistoryPage onGoToEditor={() => (view = "editor")} />
     {/if}
   </main>
 </div>
