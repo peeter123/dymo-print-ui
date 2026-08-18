@@ -25,9 +25,9 @@ APP_NAME = "dymo-print-ui"
 # perfectly sharp (no anti-aliasing) at their grid-locked sizes, which is ideal
 # for the 30px 1-bit tape. Grid sizes live in the frontend font registry.
 DEFAULT_FONTS: list[str] = [
+    "Silkscreen",
     "Pixelify Sans",
     "Press Start 2P",
-    "Silkscreen",
     "Jersey 10",
     "Tiny5",
 ]
