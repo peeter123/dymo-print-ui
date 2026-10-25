@@ -24,6 +24,15 @@ driver `Canvas`, stretches, and prints. This is what guarantees preview == print
 
 ## Running it
 
+**Poetry-free launch (PowerShell):** `.\run.ps1` initializes the driver submodule
+if absent, installs frontend dependencies with `npm ci`, rebuilds `frontend/dist`,
+and launches via `uvx` with this checkout installed editable. No project `.venv`
+is needed. `.\run.ps1 -Dev` skips the build and runs the backend with reload;
+run `npm --prefix frontend run dev` in a second terminal. `./run.sh` (`--dev`)
+is the equivalent bash launcher for Ubuntu / Linux; keep the two in sync.
+The frontend build and MDI files are not bundled in Python wheels; this launcher
+uses the checkout's assets rather than a standalone Git/wheel installation.
+
 **Dev (two processes):**
 ```bash
 poetry run uvicorn dymo_print_ui.app:app --reload   # backend :8000
